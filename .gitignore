@@ -1,0 +1,51 @@
+# Flutter/Dart/Pub related
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code related
+.vscode/
+.history/
+
+# Mac OS
+*.DS_Store
+
+# Android related
+/local.properties
+**/GeneratedPluginRegistrant.java
+.gradle/
+captures/
+app/release/
+
+# Firebase related (never commit these)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Credentials / Environment
+.env
+*.keystore
+*.jks
+key.properties
+
+# Logs
+*.log
+
+# Generated files
+lib/generated_plugin_registrant.dart
+
+# Optional: ignore crashlytics
+android/app/src/main/assets/crashlytics-build.properties
