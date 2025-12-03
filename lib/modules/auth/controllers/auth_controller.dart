@@ -8,6 +8,9 @@ class AuthController extends GetxController {
 
   var isLoading = false.obs;
 
+  // ----------------------------
+  // Normal Login
+  // ----------------------------
   Future<void> login() async {
     isLoading.value = true;
 
@@ -18,12 +21,27 @@ class AuthController extends GetxController {
       );
 
       Get.snackbar("Success", "Login Successful!");
-
-      Get.offAllNamed('/home'); // navigate to Home module
+      Get.offAllNamed('/home');
     } on FirebaseAuthException catch (e) {
       Get.snackbar("Login Error", e.message ?? "Failed to login");
     }
 
     isLoading.value = false;
+  }
+
+  // ----------------------------
+  // Guest Login
+  // ----------------------------
+  void loginAsGuest() {
+    Get.snackbar("Guest Mode", "You are now logged in as a guest!");
+    Get.offAllNamed('/home'); // redirect to home
+  }
+
+  // ----------------------------
+  // Debug Button Action
+  // ----------------------------
+  void debug() {
+    Get.snackbar("Debug", "Debug mode activated!");
+    Get.toNamed('/debug');
   }
 }

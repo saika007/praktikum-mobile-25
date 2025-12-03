@@ -15,11 +15,19 @@ class AuthPage extends GetView<AuthController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+
+              // -------------------------------
+              // Email Input
+              // -------------------------------
               TextField(
                 controller: controller.emailController,
                 decoration: const InputDecoration(labelText: "Email"),
               ),
               const SizedBox(height: 10),
+
+              // -------------------------------
+              // Password Input
+              // -------------------------------
               TextField(
                 controller: controller.passwordController,
                 obscureText: true,
@@ -27,13 +35,36 @@ class AuthPage extends GetView<AuthController> {
               ),
               const SizedBox(height: 20),
 
-              Obx(() =>
-                controller.isLoading.value
+              // -------------------------------
+              // Login Button
+              // -------------------------------
+              Obx(
+                () => controller.isLoading.value
                     ? const CircularProgressIndicator()
                     : ElevatedButton(
                         onPressed: controller.login,
                         child: const Text("Login"),
                       ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // -------------------------------
+              // Login as Guest
+              // -------------------------------
+              TextButton(
+                onPressed: controller.loginAsGuest,
+                child: const Text("Login as Guest"),
+              ),
+
+              const SizedBox(height: 10),
+
+              // -------------------------------
+              // Debug Button
+              // -------------------------------
+              OutlinedButton(
+                onPressed: controller.debug,
+                child: const Text("Debug Mode"),
               ),
             ],
           ),
