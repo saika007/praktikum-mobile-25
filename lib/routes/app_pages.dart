@@ -58,13 +58,13 @@ class AppPages {
 
     GetPage(
       name: Routes.gpsLocation,
-      page: () => const GpsLocationPage(),
+      page: () => GpsLocationPage(),
       binding: GpsLocationBinding(),
     ),
 
     GetPage(
       name: Routes.networkLocation,
-      page: () => const NetworkLocationPage(),
+      page: () => NetworkLocationPage(),
       binding: NetworkLocationBinding(),
     ),
   ];

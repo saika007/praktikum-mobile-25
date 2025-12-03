@@ -2,60 +2,52 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import '../../../data/services/gps_location_services.dart';
 
 class GpsLocationController extends GetxController {
-  var position = Rx<Position?>(null);
-  var isTracking = false.obs;
-  var accuracyMode = "GPS High".obs;
+  final service = LocationService();
+
+  Rxn<Position> position = Rxn<Position>();
+  RxBool tracking = false.obs;
 
   final mapController = MapController();
-  StreamSubscription<Position>? _sub;
+  StreamSubscription<Position>? sub;
 
-  Future<bool> ensurePermission() async {
-    if (!await Geolocator.isLocationServiceEnabled()) return false;
-    var perm = await Geolocator.checkPermission();
-
-    if (perm == LocationPermission.denied) {
-      perm = await Geolocator.requestPermission();
-      if (perm == LocationPermission.denied) return false;
+  Future<void> refreshLocation() async {
+    if (await service.ensurePermission()) {
+      position.value = await service.getCurrent();
+      _moveToMarker();
     }
-
-    if (perm == LocationPermission.deniedForever) return false;
-    return true;
   }
 
-  @override
-  Future<void> refresh() async {
-    if (!await ensurePermission()) return;
-
-    final p = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    accuracyMode.value = "GPS High";
-    position.value = p;
-  }
-
-  Future<void> startTracking() async {
-    if (!await ensurePermission()) return;
-    isTracking.value = true;
-    accuracyMode.value = "GPS Live";
-
-    _sub = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 3,
-      ),
-    ).listen((p) => position.value = p);
+  void startTracking() async {
+    if (await service.ensurePermission()) {
+      tracking.value = true;
+      sub = service.stream().listen((p) {
+        position.value = p;
+        _moveToMarker();
+      });
+    }
   }
 
   void stopTracking() {
-    isTracking.value = false;
-    _sub?.cancel();
+    tracking.value = false;
+    sub?.cancel();
+  }
+
+  void _moveToMarker() {
+    if (position.value != null) {
+      mapController.move(
+        LatLng(position.value!.latitude, position.value!.longitude),
+        16,
+      );
+    }
   }
 
   @override
   void onClose() {
-    _sub?.cancel();
+    sub?.cancel();
     super.onClose();
   }
 }

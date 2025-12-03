@@ -1,37 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
+
 import '../controllers/gps_location_controller.dart';
 
 class GpsLocationPage extends StatelessWidget {
-  const GpsLocationPage({super.key});
+  GpsLocationPage({super.key});
+  final ctrl = Get.put(GpsLocationController());
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.find<GpsLocationController>();
-
     return Scaffold(
-      appBar: AppBar(title: const Text('GPS Location')),
+      appBar: AppBar(title: const Text("GPS Location")),
       body: Column(
         children: [
+          // ================= MAP =================
           Expanded(
             child: Obx(() {
-              final p = ctrl.position.value;
-              final center = p == null
+              final pos = ctrl.position.value;
+              final center = pos == null
                   ? LatLng(-6.2, 106.8)
-                  : LatLng(p.latitude, p.longitude);
+                  : LatLng(pos.latitude, pos.longitude);
 
               return FlutterMap(
                 mapController: ctrl.mapController,
-                options: MapOptions(center: center, zoom: 15),
+                options: MapOptions(center: center, zoom: 14),
                 children: [
                   TileLayer(
+                    // OpenStreetMap official tile server
                     urlTemplate:
                         "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+                    // REQUIRED BY POLICY
+                    userAgentPackageName: 'com.example.cafedelicia',
                   ),
-                  if (p != null)
+
+                  if (pos != null)
                     MarkerLayer(
                       markers: [
                         Marker(
@@ -51,11 +57,16 @@ class GpsLocationPage extends StatelessWidget {
             }),
           ),
 
-          const Text(
-            "© OpenStreetMap contributors",
-            style: TextStyle(fontSize: 11),
+          // ============= ATTRIBUTION (MANDATORY) ============
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              "© OpenStreetMap contributors",
+              style: TextStyle(fontSize: 12),
+            ),
           ),
 
+          // ================= INFO PANEL =================
           Padding(
             padding: const EdgeInsets.all(12),
             child: Obx(() {
@@ -66,44 +77,55 @@ class GpsLocationPage extends StatelessWidget {
                 children: [
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(12),
                       child: p == null
-                          ? const Text("No GPS data yet.")
+                          ? const Text("No GPS yet")
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Provider: GPS"),
-                                Text("Accuracy Mode: ${ctrl.accuracyMode.value}"),
-                                Text("Latitude: ${p.latitude.toStringAsFixed(6)}"),
-                                Text("Longitude: ${p.longitude.toStringAsFixed(6)}"),
+                                const Text("Provider: GPS"),
+                                Text(
+                                  "Latitude:  ${p.latitude.toStringAsFixed(6)}",
+                                ),
+                                Text(
+                                  "Longitude: ${p.longitude.toStringAsFixed(6)}",
+                                ),
+                                Text("Accuracy: ${p.accuracy} m"),
                                 Text("Altitude: ${p.altitude} m"),
                                 Text("Speed: ${p.speed} m/s"),
-                                Text("Accuracy: ${p.accuracy} m"),
-                                Text("Timestamp: ${DateFormat.yMd().add_jms().format(p.timestamp)}"),
+                                Text(
+                                  "Timestamp: ${DateFormat('yMd Hms').format(p.timestamp)}",
+                                ),
                               ],
                             ),
                     ),
                   ),
-
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
 
                   Row(
                     children: [
                       ElevatedButton.icon(
-                        onPressed: ctrl.refresh,
+                        onPressed: ctrl.refreshLocation,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Refresh'),
+                        label: const Text("Refresh"),
                       ),
-                      const SizedBox(width: 8),
-                      Obx(
-                        () => ElevatedButton.icon(
-                          onPressed: ctrl.isTracking.value
-                              ? ctrl.stopTracking
-                              : ctrl.startTracking,
-                          icon: Icon(
-                            ctrl.isTracking.value ? Icons.stop : Icons.play_arrow,
-                          ),
-                          label: Text(ctrl.isTracking.value ? 'Stop' : 'Live'),
+                      const SizedBox(width: 10),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          ctrl.tracking.value
+                              ? ctrl.stopTracking()
+                              : ctrl.startTracking();
+                        },
+                        icon: Icon(
+                          ctrl.tracking.value ? Icons.stop : Icons.play_arrow,
+                        ),
+                        label: Text(
+                          ctrl.tracking.value ? "Stop Live" : "Live GPS",
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ctrl.tracking.value
+                              ? Colors.red
+                              : null,
                         ),
                       ),
                     ],
