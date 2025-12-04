@@ -29,11 +29,30 @@ class LocalCoffeeRepository {
   }
 
   Future<void> seedInitialData() async {
-  if (box.isNotEmpty) return;
+    if (box.isNotEmpty) return;
 
-  await addCoffee(Coffee(id: '1', name: 'Espresso', price: 3.00));
-  await addCoffee(Coffee(id: '2', name: 'Latte', price: 4.50));
-  await addCoffee(Coffee(id: '3', name: 'Cappuccino', price: 4.00));
+    await addCoffee(Coffee(
+      id: '1',
+      name: 'Espresso',
+      price: 3.00,
+      imagePath: 'assets/images/espresso.png',
+      description: 'A strong and bold coffee shot.',
+    ));
+
+    await addCoffee(Coffee(
+      id: '2',
+      name: 'Latte',
+      price: 4.50,
+      imagePath: 'assets/images/latte.png',
+      description: 'A creamy coffee with steamed milk.',
+    ));
+
+    await addCoffee(Coffee(
+      id: '3',
+      name: 'Cappuccino',
+      price: 4.00,
+      imagePath: 'assets/images/cappuccino.png',
+      description: 'A coffee with equal parts espresso, steamed milk, and foam.',
+    ));
   }
-
 }

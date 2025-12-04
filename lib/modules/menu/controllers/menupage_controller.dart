@@ -20,7 +20,6 @@ class MenuPageController extends GetxController {
     coffees.value = repo.getCoffees();
   }
 
-  // Handle location selection
   void showLocationDialog() {
     Get.bottomSheet(
       Container(

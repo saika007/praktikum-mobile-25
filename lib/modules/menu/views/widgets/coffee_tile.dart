@@ -39,7 +39,20 @@ class _CoffeeTileState extends State<CoffeeTile> {
       ),
       child: Row(
         children: [
-          // FULL TILE TAP AREA (EXCEPT CART BUTTON)
+          /// IMAGE
+          ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: Image.asset(
+              widget.coffee.imagePath,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          SizedBox(width: 16),
+
+          /// TEXT + PRICE
           Expanded(
             child: InkWell(
               onTapDown: (_) => setState(() => pressed = true),
@@ -51,7 +64,8 @@ class _CoffeeTileState extends State<CoffeeTile> {
                   arguments: widget.coffee.id,
                 );
               },
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Hero(
                     tag: "coffee_${widget.coffee.name}",
@@ -67,7 +81,7 @@ class _CoffeeTileState extends State<CoffeeTile> {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  SizedBox(height: 4),
                   Text(
                     "\$${widget.coffee.price.toStringAsFixed(2)}",
                     style: TextStyle(
@@ -83,7 +97,7 @@ class _CoffeeTileState extends State<CoffeeTile> {
 
           SizedBox(width: 12),
 
-          // CART BUTTON (Does NOT trigger navigation)
+          /// CART BUTTON
           IconButton(
             icon: Icon(Icons.add_shopping_cart, color: Colors.brown.shade700),
             onPressed: () {

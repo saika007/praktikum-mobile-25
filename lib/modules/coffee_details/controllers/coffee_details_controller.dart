@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
-import 'package:dio/dio.dart';
+import '../../../data/models/coffee.dart';
+import '../../../data/repositories/local_coffee_repository.dart';
 
 class CoffeeDetailsController extends GetxController {
   final String coffeeId;
@@ -10,25 +11,28 @@ class CoffeeDetailsController extends GetxController {
   var isLoading = true.obs;
   var error = "".obs;
 
-  final dio = Dio();
+  final LocalCoffeeRepository repo = LocalCoffeeRepository();
 
   @override
   void onInit() {
     super.onInit();
-    fetchDescription();
+    loadFromHive();
   }
 
-  Future<void> fetchDescription() async {
+  void loadFromHive() {
     try {
       isLoading.value = true;
 
-      final response = await dio.get(
-        "https://firestore.googleapis.com/v1/projects/coffee-delicia-2bb22/databases/(default)/documents/menu/beverages/coffees/$coffeeId",
-      );
+      Coffee? coffee = repo.getCoffeeById(coffeeId);
 
-      description.value = response.data["fields"]["description"]["stringValue"] ?? "No description.";
+      if (coffee == null) {
+        error.value = "Coffee not found";
+        return;
+      }
+
+      description.value = coffee.description;
     } catch (e) {
-      error.value = "Failed to load description: $e";
+      error.value = "Hive read error: $e";
     } finally {
       isLoading.value = false;
     }

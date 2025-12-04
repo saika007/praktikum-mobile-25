@@ -13,9 +13,17 @@ class Coffee {
   @HiveField(2)
   final double price;
 
+  @HiveField(3)
+  final String imagePath;
+
+  @HiveField(4)
+  final String description;
+
   Coffee({
     required this.id,
     required this.name,
     required this.price,
+    required this.imagePath,
+    required this.description,
   });
 }

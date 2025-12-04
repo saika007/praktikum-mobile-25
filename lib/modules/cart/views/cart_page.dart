@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/cart_controller.dart';
+import '../../../data/services/purchase_history_service.dart';
 
 
 class CartPage extends StatelessWidget {
@@ -47,9 +48,17 @@ class CartPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Next: Checkout + Purchase History
-                Get.snackbar("Success", "Checked out successfully!");
+              onPressed: () async {
+                final historyService = PurchaseHistoryService();
+                const userId = "demoUser"; // Replace with FirebaseAuth
+
+                await historyService.savePurchase(
+                  cart.cartItems,
+                  cart.totalPrice,
+                  userId,
+                );
+
+                Get.snackbar("Success", "Purchase saved!");
                 cart.clearCart();
               },
               child: const Text("Checkout"),

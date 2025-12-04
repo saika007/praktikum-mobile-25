@@ -5,7 +5,7 @@ import '../controllers/menupage_controller.dart';
 import '../animations/menu_animations.dart';
 import 'widgets/coffee_tile.dart';
 import '../../cart/views/cart_page.dart';
-
+import '../../purchase_history/views/purchase_history_page.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -32,6 +32,38 @@ class _MenuPageState extends State<MenuPage>
     super.dispose();
   }
 
+  void showLocationDialog() {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Get.theme.cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+        ),
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.gps_fixed),
+              title: const Text("GPS (Akurasi Tinggi)"),
+              onTap: () {
+                Get.back();
+                Get.toNamed('/gps-location');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.wifi),
+              title: const Text("Network (Akurasi Rendah)"),
+              onTap: () {
+                Get.back();
+                Get.toNamed('/network-location');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,13 +71,16 @@ class _MenuPageState extends State<MenuPage>
         title: const Text("Coffee Menu"),
         actions: [
           IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => Get.to(() => PurchaseHistoryPage()),
+          ),
+          IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () => Get.to(() => CartPage()),
           ),
         ],
       ),
 
-      /// Main Section For Coffee Items
       body: Obx(() {
         if (controller.coffees.isEmpty) {
           return const Center(child: Text("No coffees found"));
@@ -58,18 +93,11 @@ class _MenuPageState extends State<MenuPage>
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: controller.coffees.length,
-              itemBuilder: (_, i) =>
-                  CoffeeTile(coffee: controller.coffees[i]),
+              itemBuilder: (_, i) => CoffeeTile(coffee: controller.coffees[i]),
             ),
           ),
         );
       }),
-
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: controller.showLocationDialog,
-        icon: const Icon(Icons.location_on),
-        label: const Text("Dimana saya?"),
-      ),
     );
   }
 }
